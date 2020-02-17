@@ -6,13 +6,15 @@ const Maps = require('./Maps')
 
 bot.login(TOKEN);
 
-//add space to avoid equalty check conflicts
-let botCommands = ['!map {mapName}', '!maps ', '!franklin ', '!wep ']
+//Add space to avoid equalty check conflicts in commands
+let botCommands = ['!maps {mapName}', '!maps list', '!franklin ', '!wep {weapon}']
 
 bot.on('ready', () => {
     console.log(`Logged in as ${bot.user.tag}!`);
 
 });
+
+//Commands
 bot.on('message', msg => {
     if (msg.content.toLowerCase() == '!help') {
         msg.channel.send(botCommands)
@@ -32,24 +34,32 @@ bot.on('message', msg => {
 
     //////////////////////////////////////////////////////////////////////
 
-    if (msg.content.toLowerCase().startsWith("!map")) {
+    if (msg.content.toLowerCase().startsWith("!maps")) {
         let userInput = msg.content.split(' ');
-        let mapName = userInput[1].toLowerCase()
-        let mapFile = Maps.getMapImage(mapName)
-        if (mapFile) {
-            msg.channel.send(`${mapName}:`, {
-                file: mapFile
-            })
+        let mapsCommand = userInput[1] //list or mapName
+        let mapFile = Maps.getMapImage(mapsCommand)
+
+        if (mapsCommand == 'list') {
+            msg.channel.send(Maps.listMapNames())
         } else {
-            msg.reply(`Map "${mapName}" does not exist. Use !maps to see available maps.`)
+            if (mapFile) {
+                msg.channel.send(`${mapsCommand}:`, {
+                    file: mapFile
+                })
+            } else {
+                msg.reply(`Map "${mapsCommand}" does not exist. Use !maps to see available maps.`)
+
+            }
         }
+
+
+
+
+
     }
 
     //////////////////////////////////////////////////////////////////////
 
-    if (msg.content.toLowerCase() == "!maps") {
-        msg.channel.send(Maps.listMapNames())
-    }
 
 
 
